@@ -39,7 +39,7 @@ DAYS_OF_WEEK = [
 	'Wednesday',
 	'Thursday',
 	'Friday',
-	'Shabbos'
+	'Shabbos' # move to 0 position, since modulas correct for it
 ]
 
 SOLAR_YEAR = {
@@ -49,13 +49,13 @@ SOLAR_YEAR = {
 }
 
 START_DATE = {
-	'cholokim': 0,
-	'day': 3,
+	'year': 0,
+	'month': 0,
 	'days': 0,
+	'day_of_week': 3,
 	'hours': 6,
 	'minutes': 0,
-	'month': 0,
-	'year': 0
+	'cholokim': 0
 }
 
 END_DATE = {
@@ -70,12 +70,12 @@ END_DATE = {
 
 LAST_MOLAD = {
 	'year': 5784,
-	'month': 10,
+	'month': 7,
     'days': 30,
-	'day_of_week': 6,
-    'hour': 21,
-	'minute': 29,
-    'cholokim': 5
+	'day_of_week': 7,
+    'hour': 18,
+	'minute': 33,
+    'cholokim': 1
 }
 
 
@@ -99,8 +99,9 @@ def print_dictionary (dictionary):
 
 def readable_molad (year, month, days, day_of_week, hour, minute, cholokim, *rest):
 	meridian = 'AM' if hour < 12 else 'PM'
-	hour = hour % 12
-	return f"[{HEBREW_MONTHS[month]} {year}] {DAYS_OF_WEEK[day_of_week - 1]} {hour}:{minute} {meridian} + {cholokim} cholokim"
+	hour = hour % 12 if not hour == 0 else 12
+	minute = f"{minute:02}"
+	return f"[Molad {HEBREW_MONTHS[month]} {year}] {DAYS_OF_WEEK[day_of_week - 1]} {hour}:{minute} {meridian} + {cholokim} cholokim"
 
 
 def check_lunar_leap_year(hebrew_year):
@@ -121,10 +122,12 @@ def calculate_molad(year, month, days, day_of_week, hour, minute, cholokim):
 	new_minute = minute + LUNAR_MONTH['minutes']
 	new_cholokim = cholokim + LUNAR_MONTH['cholokim']
 
+	print(math.floor(new_hour / LUNAR_CYCLE_TERMS['hours']))
 	# Simplify terms
 	molad_year = year + 1 if (month < HEBREW_MONTHS.index('Tishrei') and new_month >= HEBREW_MONTHS.index('Tishrei')) else year
 	molad_month = new_month % len(HEBREW_MONTHS) if is_lunar_leap_year else new_month % (len(HEBREW_MONTHS) - 1)
 	molad_month_name = HEBREW_MONTHS[molad_month] if (is_lunar_leap_year and new_month == 11) == 11 else 'Adar I'
+	# The next line isn't working!!!
 	molad_day_of_week = (new_day_of_week + math.floor(new_hour / LUNAR_CYCLE_TERMS['hours'])) % LUNAR_CYCLE_TERMS['days_in_week']
 	molad_hour = (new_hour + math.floor(new_minute / LUNAR_CYCLE_TERMS['minutes'])) % LUNAR_CYCLE_TERMS['hours']
 	molad_minute = (new_minute + math.floor(new_cholokim / LUNAR_CYCLE_TERMS['cholokim'])) % LUNAR_CYCLE_TERMS['minutes']
@@ -144,19 +147,12 @@ def calculate_molad(year, month, days, day_of_week, hour, minute, cholokim):
 
 def main():
 	past_molad = next_molad = LAST_MOLAD
-	# print(END_DATE['month'], END_DATE['year'])
 
 	while not (past_molad['year'] > END_DATE['year'] or (past_molad['month'] == END_DATE['month'] and past_molad['year'] == END_DATE['year'])):
-		# print(not (next_molad['year'] > END_DATE['year'] or (next_molad['month'] == END_DATE['month'] and next_molad['year'] == END_DATE['year'])))
-		# print(next_molad['month'], next_molad['year'])
-		# if next_molad['year'] >= 5786: return
 		next_molad = calculate_molad(**past_molad)
 		print(readable_molad(**next_molad))
 		past_molad = next_molad
 
-	# print(readable_molad(**next_molad))
-	# next_molad = calculate_molad(**next_molad)
-	# print(readable_molad(**next_molad))
 	return
 
 
