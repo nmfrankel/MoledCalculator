@@ -13,7 +13,7 @@ LUNAR_CYCLE_TERMS = {
     'days': 29,
     'hours': 24,
 	'minutes': 60,
-    'cholokim': 48
+    'cholokim': 18
 }
 
 HEBREW_MONTHS = [
@@ -51,20 +51,16 @@ SOLAR_YEAR = {
 
 START_DATE = {
 	'year': 0,
-	'month': 0,
-	'days': 0,
-	'day_of_week': 3,
-	'hours': 18,
-	'minutes': 0,
-	'cholokim': 0
+	'month': 6,
+	'days': 30,
+	'day_of_week': 1,
+	'hours': 23,
+	'minutes': math.floor(204 / LUNAR_CYCLE_TERMS['cholokim']),
+	'cholokim': 204 % LUNAR_CYCLE_TERMS['cholokim']
 }
 
 END_DATE = {
 	# Get end date dynamically
-	# 'cholokim': 0,
-	# 'days': 0,
-	# 'hours': 0,
-	# 'minutes': 0,
 	'month': HEBREW_MONTHS.index('Shevat'),
 	'year': 5785
 }
@@ -101,7 +97,7 @@ def print_dictionary (dictionary):
 
 def check_lunar_leap_year(hebrew_year):
     year_in_cycle = hebrew_year % 19
-    return year_in_cycle in [3, 6, 8, 11, 14, 17, 19]
+    return year_in_cycle in [0, 3, 6, 8, 11, 14, 17]
 
 
 """ Format timestamp to readable string """
@@ -145,7 +141,7 @@ def calculate_molad(year, month, days, day_of_week, hours, minutes, cholokim):
 
 
 def main():
-	past_molad = next_molad = LAST_MOLAD
+	past_molad = next_molad = START_DATE # LAST_MOLAD
 	print(readable_molad(**past_molad))
 
 	while not (past_molad['month'] == END_DATE['month'] and past_molad['year'] >= END_DATE['year']):
