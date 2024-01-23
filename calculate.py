@@ -141,7 +141,8 @@ def calculate_molad(year, month, days, day_of_week, hours, minutes, cholokim):
 
 
 def main():
-	past_molad = next_molad = START_DATE # LAST_MOLAD
+	# past_molad = next_molad = LAST_MOLAD
+	past_molad = next_molad = START_DATE
 	print(readable_molad(**past_molad))
 
 	while not (past_molad['month'] == END_DATE['month'] and past_molad['year'] >= END_DATE['year']):
